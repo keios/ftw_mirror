@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# this file is licenced under the
+#
+# DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+#                    Version 2, December 2004
+#
+# Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+#
+# Everyone is permitted to copy and distribute verbatim or modified
+# copies of this license document, and changing it is allowed as long
+# as the name is changed.
+#
+#            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+#   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+#
+#  0. You just DO WHAT THE FUCK YOU WANT TO.
+#
+#
+
+# set to your liking
+WATCH_DIR=/home/keios/test/FTWMirror
+TARGET_DIR=/home/keios/test/ftw_mirror/data
+
+# this will be read (and cleared) by the frontend
+ERROR_MSG=/home/keios/test/ftw_mirror/error.msg
+
+# this is cheap and only somewhat effective. webservers generally interpret files by mimetype, not by extension,
+# so you really shouldn't frolic that you're safe from malicious attackers. 'malicious_php_code.jpg' can still ruin your day
+
+# TODO: ERROR: pattern will match a file named "file.plt"
+
+EXCLUDE_TYPES="xhtml|xml|html|htm|php|php4|php5|ph3|ph4|ph5|phtml|phtm|pl|cgi"
+
+# for setting permissions on the file afterwards
+MIRRORED_FILEMASK="0440"
+# should be set to the user and group your webserver uses
+MIRRORED_USER="keios"
+MIRRORED_GROUP="users"
+
+# leave these alone
+ACTION=""
+DATE=""
+FILE_HANDLE=""
+FILETYPE=""
+
+set -u
+
+# main loop
+inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e moved_to -e moved_from "$WATCH_DIR" | while read LINE; do
+    # awk is slow, but i don't care. send me a pull request if you've a better option
+    ACTION=$( echo "$LINE" | awk '{print $1;}' )
+    FILE_HANDLE=$( echo "$LINE" | awk '{print $2;}' )
+
+    case $ACTION in
+        CREATE,ISDIR)
+            # write an error message if somebody tries to upload a directory
+            DATE=$(date +%F/%T)
+            echo -e "$DATE: \"$FILE_HANDLE\" is a directory. this service is for files only.\r" >> "$ERROR_MSG"
+            # for good measure
+            rm -rf "$WATCH_DIR/$FILE_HANDLE"
+        ;;
+        DELETE|MOVED_FROM)
+            rm -f "$TARGET_DIR/$FILE_HANDLE"
+        ;;
+        CLOSE_WRITE*|MOVED_TO)
+            FILETYPE="${FILE_HANDLE##*.}"
+            if [[ $FILETYPE =~ $EXCLUDE_TYPES ]]; then
+                # write an error message if somebody tries to upload an undesirable filetype
+                DATE=$(date +%F/%T)
+                echo -e "$DATE: \"$FILE_HANDLE\" is a \"$FILETYPE\" file. this service does not accept such.\r" >> "$ERROR_MSG"
+                # kill it with fire or the nearest equivalent.
+                rm -f "$WATCH_DIR/$FILE_HANDLE"
+            else
+                cp "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
+                chmod $MIRRORED_FILEMASK "$TARGET_DIR/$FILE_HANDLE"
+                chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$TARGET_DIR/$FILE_HANDLE"
+            fi
+        ;;
+        *)
+        ;;
+    esac
+
+    # just because
+    ACTION=""
+    FILE_HANDLE=""
+    LINE=""
+
+done
+
+exit 0
