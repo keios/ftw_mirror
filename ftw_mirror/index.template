@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- this file is licenced under the
+
+ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                    Version 2, December 2004
+
+ Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+
+ Everyone is permitted to copy and distribute verbatim or modified
+ copies of this license document, and changing it is allowed as long
+ as the name is changed.
+
+            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. You just DO WHAT THE FUCK YOU WANT TO.
+
+-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="<!--TMPL_VAR  name="t_style" -->" media="screen" />
+<title><!--TMPL_VAR name="t_title"--></title>
+</head>
+<body>
+    <h1><!--TMPL_VAR name="t_header"--></h1>
+    <h2><!--TMPL_VAR name="t_subheader"--></h2>
+
+    <!-- TMPL_IF name="t_errors"-->
+    <p><blockquote><!--TMPL_VAR name="t_errors"--></blockquote></p>
+    <!--/TMPL_IF-->
+</body>
+</html>

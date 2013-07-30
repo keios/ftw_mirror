@@ -29,8 +29,8 @@ ERROR_MSG=/home/keios/test/ftw_mirror/error.msg
 # so you really shouldn't frolic that you're safe from malicious attackers. 'malicious_php_code.jpg' can still ruin your day
 EXCLUDE_TYPES="xhtml xml html htm php php4 php5 ph3 ph4 ph5 phtml phtm pl cgi"
 
-# for setting permissions on the file afterwards
-MIRRORED_FILEMASK="0440"
+# for setting permissions on the file afterwards - not a umask
+MIRRORED_FILEPERM="0440"
 # should be set to the user and group your webserver uses
 MIRRORED_USER="keios"
 MIRRORED_GROUP="users"
@@ -72,7 +72,7 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
                 rm -f "$WATCH_DIR/$FILE_HANDLE"
             else
                 cp "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
-                chmod $MIRRORED_FILEMASK "$TARGET_DIR/$FILE_HANDLE"
+                chmod $MIRRORED_FILEPERM "$TARGET_DIR/$FILE_HANDLE"
                 chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$TARGET_DIR/$FILE_HANDLE"
             fi
         ;;
