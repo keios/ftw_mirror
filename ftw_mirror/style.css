@@ -63,10 +63,11 @@ border-collapse:collapse;
 
 th {
 text-indent:5%;
+background-color:#909090;
 }
 
 td {
-padding:1em;
+padding:0.3em;
 }
 
 table,th,td,tr {
@@ -75,6 +76,10 @@ border:1px solid;
 
 .tablealt {
 background-color:#909090;
+}
+
+.tableright {
+text-align:right;
 }
 
 #mainColumn {
@@ -162,7 +167,7 @@ display:inline;
 #footer {
 position:relative;
 bottom:0;
-margin:5em 0 0 0;
+margin:2em 0 0 0;
 padding:0;
 height:4em;
 line-height:4em;

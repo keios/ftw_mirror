@@ -63,7 +63,7 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
             rm -f "$TARGET_DIR/$FILE_HANDLE"
         ;;
         CLOSE_WRITE*|MOVED_TO)
-            FILETYPE="${FILE_HANDLE##*.}"
+            FILETYPE=$(echo "${FILE_HANDLE##*.}" | tr [:upper:] [:lower:])
             if [[ $FILETYPE =~ $EXCLUDE_TYPES ]]; then
                 # write an error message if somebody tries to upload an undesirable filetype
                 DATE=$(date +%F/%T)
@@ -71,7 +71,7 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
                 # kill it with fire or the nearest equivalent.
                 rm -f "$WATCH_DIR/$FILE_HANDLE"
             else
-                cp "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
+                cp -f "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
                 chmod $MIRRORED_FILEPERM "$TARGET_DIR/$FILE_HANDLE"
                 chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$TARGET_DIR/$FILE_HANDLE"
             fi
