@@ -67,7 +67,8 @@ sub check_data_dir {
 # return values: 0 = not empty, 1 = empty, -1 = not existent
   my ( $dir ) = @_;
   my $file;
-  if ( opendir my $dfh, $dir ){
+  opendir my $dfh, $dir or die "Could not open dir: $!";
+  if ( $dfh ){
       while ( defined( $file = readdir $dfh ) ){
           next if $file eq '.' or $file eq '..';
           closedir $dfh;
@@ -83,7 +84,6 @@ sub check_data_dir {
 #
 # code
 #
-
 
 process_error_messages(s_errormsg);
 

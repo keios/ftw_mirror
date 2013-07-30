@@ -16,37 +16,44 @@ this file is licenced under the
   0. You just DO WHAT THE FUCK YOU WANT TO.
 
 */
+
 body {
 margin:3em;
 padding:0;
 height:100%;
 background-color:#D1D100;
-color:#000000;
+color:#000;
 text-align:center;
 font-family:Verdana, Helvetica, sans-serif;
 font-size:.9em;
 }
 
 a {
-color:#DDDD00;
+color:#DD0;
 text-decoration:underline;
 }
 
 a:hover {
-color:#eeeeee;
+color:#eee;
 text-decoration:none;
 }
 
-blockquote {
+.box {
 margin:1em;
 padding:.5em;
-background-color:#EEEEEE;
-border-top:1px solid #cccccc;
-border-bottom:1px solid #cccccc;
+background-color:#EEE;
+border-top:1px solid #ccc;
+border-bottom:1px solid #ccc;
 }
 
-blockquote p {
+.box p {
 margin:.2em;
+}
+
+.red {
+color:#F00;
+font-weight:bold;
+font-size:1.1em;
 }
 
 table {
@@ -66,6 +73,10 @@ table,th,td,tr {
 border:1px solid;
 }
 
+.tablealt {
+background-color:#909090;
+}
+
 #mainColumn {
 margin: 0 auto;
 vertical-align: middle;
@@ -81,8 +92,8 @@ padding:1em;
 width:960px;
 text-align:left;
 vertical-align: middle;
-background-color:#AAAAAA;
-/*border:1px solid #999999;*/
+background-color:#AAA;
+/*border:1px solid #999;*/
 position: relative;
 z-index:23;
 }
@@ -113,7 +124,7 @@ letter-spacing:.1em;
 margin:-1em -1em 0 -1em;
 padding:0 0 0 0;
 height:5em;
-background-color:#DDDD00;
+background-color:#DD0;
 }
 
 #header h1 {
@@ -158,18 +169,5 @@ line-height:4em;
 text-align:center;
 font-size:.7em;
 background-color:#909090;
-border-top:1px solid #999999;
+border-top:1px solid #999;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

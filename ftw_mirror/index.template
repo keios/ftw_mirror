@@ -31,24 +31,34 @@
     </div>
 
     <!--TMPL_IF name="t_errors"-->
-    <p><blockquote>
-    Backend Error Messages:<br />
+    <div class="box">
+    <p class="red">Backend Error Messages:</p>
     <!--TMPL_VAR name="t_errors"-->
-    </blockquote></p>
+    </div>
     <!--/TMPL_IF-->
 
-    <table>
+    <table class="tablealt">
         <tr>
             <th>filename</th>
             <th>size</th>
             <th>permalink</th>
         </tr>
     <!--TMPL_LOOP name="t_dirlisting"-->
-        <tr>
-            <td><!--TMPL_VAR name="t_itemname"--></td>
-            <td><!--TMPL_VAR name="t_itemsize"--></td>
-            <td><!--TMPL_VAR name="t_itemlink"--></td>
-        </tr>
+        <TMPL_IF NAME="__odd__">
+            <tr>
+                <td><!--TMPL_VAR name="t_itemname"--></td>
+                <td><!--TMPL_VAR name="t_itemsize"--></td>
+                <td><!--TMPL_VAR name="t_itemlink"--></td>
+            </tr>
+        </TMPL_IF>
+
+        <TMPL_UNLESS NAME="__odd__">
+            <tr class="tablealt">
+                <td><!--TMPL_VAR name="t_itemname"--></td>
+                <td><!--TMPL_VAR name="t_itemsize"--></td>
+                <td><!--TMPL_VAR name="t_itemlink"--></td>
+            </tr>
+        </TMPL_UNLESS>
     <!--/TMPL_LOOP-->
     </table>
 
