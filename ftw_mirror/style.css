@@ -1,0 +1,175 @@
+/*
+this file is licenced under the
+
+ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                    Version 2, December 2004
+
+ Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+
+ Everyone is permitted to copy and distribute verbatim or modified
+ copies of this license document, and changing it is allowed as long
+ as the name is changed.
+
+            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. You just DO WHAT THE FUCK YOU WANT TO.
+
+*/
+body {
+margin:3em;
+padding:0;
+height:100%;
+background-color:#D1D100;
+color:#000000;
+text-align:center;
+font-family:Verdana, Helvetica, sans-serif;
+font-size:.9em;
+}
+
+a {
+color:#DDDD00;
+text-decoration:underline;
+}
+
+a:hover {
+color:#eeeeee;
+text-decoration:none;
+}
+
+blockquote {
+margin:1em;
+padding:.5em;
+background-color:#EEEEEE;
+border-top:1px solid #cccccc;
+border-bottom:1px solid #cccccc;
+}
+
+blockquote p {
+margin:.2em;
+}
+
+table {
+width:100%;
+border-collapse:collapse;
+}
+
+th {
+text-indent:5%;
+}
+
+td {
+padding:1em;
+}
+
+table,th,td,tr {
+border:1px solid;
+}
+
+#mainColumn {
+margin: 0 auto;
+vertical-align: middle;
+width: 100%;
+height: 800px;
+position: relative;
+z-index:1;
+}
+
+#centerColumn {
+margin:0 auto;
+padding:1em;
+width:960px;
+text-align:left;
+vertical-align: middle;
+background-color:#AAAAAA;
+/*border:1px solid #999999;*/
+position: relative;
+z-index:23;
+}
+
+#bgdiv {
+z-index:5;
+width:333px;
+height:333px;
+position: absolute;
+float:right;
+bottom: 23%;
+right:11%;
+}
+
+#bgdiv img {
+width:100%;
+margin: auto;
+}
+
+#centerColumn h2 {
+margin:0 0 -.5em 0;
+padding:.75em 0 0 0;
+font-size:1em;
+letter-spacing:.1em;
+}
+
+#header {
+margin:-1em -1em 0 -1em;
+padding:0 0 0 0;
+height:5em;
+background-color:#DDDD00;
+}
+
+#header h1 {
+margin:0 0 -.6em 0;
+padding:.5em 0 0 1em;
+font-size:1.5em;
+letter-spacing:.1em;
+}
+
+#header h2 {
+margin:0 0 0 0;
+padding:1em 0 0 1.75em;
+font-size:.9em;
+font-weight:300;
+letter-spacing:.1em;
+}
+
+#nav {
+margin:0 0 1em 0;
+padding:.4em 0 0 0;
+}
+
+#nav ul {
+margin:0;
+padding:0;
+list-style:none;
+}
+
+#nav li {
+margin:0;
+padding:.25em;
+display:inline;
+}
+
+#footer {
+position:relative;
+bottom:0;
+margin:5em 0 0 0;
+padding:0;
+height:4em;
+line-height:4em;
+text-align:center;
+font-size:.7em;
+background-color:#909090;
+border-top:1px solid #999999;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

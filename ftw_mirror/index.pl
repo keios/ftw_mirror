@@ -31,7 +31,7 @@ use CGI::Carp qw( fatalsToBrowser warningsToBrowser );
 # set to your liking
 use constant s_stylesheet    => 'style.css';
 use constant s_header        => 'FTW Mirror';
-use constant s_subheader     => 'ftp to web mirror scripts';
+use constant s_subheader     => 'FTP-to-WWW mirror scripts';
 use constant s_title         => 'FTW Mirror';
 
 use constant s_datadir       => '/home/keios/test/ftw_mirror/data';
@@ -83,6 +83,7 @@ sub check_data_dir {
 #
 # code
 #
+
 
 process_error_messages(s_errormsg);
 

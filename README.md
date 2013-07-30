@@ -1,4 +1,4 @@
 ftw_mirror
 ==========
 
-ftp-to-http mirror scripts
+FTP-to-WWW mirror scripts
