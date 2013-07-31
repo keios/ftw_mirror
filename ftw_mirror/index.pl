@@ -27,7 +27,6 @@ use CGI;
 use URI::Encode;
 use HTML::Template;
 use utf8;
-use CGI::Carp qw( fatalsToBrowser warningsToBrowser );
 
 # set to your liking
 
