@@ -82,6 +82,20 @@ background-color:#909090;
 text-align:right;
 }
 
+#progress {
+background-color: #CCC;
+height:1.2em;
+width:100%;
+padding:3px;
+}
+
+#progress span {
+display:block;
+height:100%;
+color:#DD0;
+/*overflow:hidden;
+*/}
+
 #mainColumn {
 margin: 0 auto;
 vertical-align: middle;
@@ -126,7 +140,7 @@ letter-spacing:.1em;
 }
 
 #header {
-margin:-1em -1em 0 -1em;
+margin:-1em -1em 1em -1em;
 padding:0 0 0 0;
 height:5em;
 background-color:#DD0;

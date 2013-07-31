@@ -30,15 +30,19 @@ use utf8;
 use CGI::Carp qw( fatalsToBrowser warningsToBrowser );
 
 # set to your liking
+
+# html style options
 use constant s_stylesheet    => 'style.css';
 use constant s_header        => 'FTW Mirror';
 use constant s_subheader     => 'FTP-to-WWW mirror scripts';
 use constant s_title         => 'FTW Mirror';
 
+# path options
 use constant s_datadir       => '/home/keios/test/ftw_mirror/data';
 use constant s_errormsg      => '/home/keios/test/ftw_mirror/error.msg';
 
-my $s_showdiskfree  = 0;
+# show used disk space progress bar
+use constant s_showdiskfree  => 1;
 
 # leave these alone
 my $m_errstring = '';
@@ -58,23 +62,36 @@ my $m_template = HTML::Template->new( filename => "index.template",
 #
 
 sub process_error_messages {
-    my ( $fh ) = @_;
-    my $fs = -s $fh;
+    my ( $file ) = @_;
+    my $fh;
+    my $fs = -s $file;
+    my $errormsg = '';
     if ( $fs ) {
-        $m_template->param(
-            t_errors => "TODO: error messages go here",
-        );
+        $errormsg = do {
+            local $/ = undef;
+            open( $fh, "+<", $file) or die "Could not open file: $!\n";
+            <$fh>;
+        };
+    truncate( $fh, "0" ) or die "Could not empty $fh: $!\n";
+    close( $fh );
+    $errormsg =~ s/\n/\<br \/\>/g;
     }
+    return $errormsg;
 }
 
-sub show_free_diskspace {
-# TODO
+sub process_df_output {
+# yes, i do know Filesys::DiskSpace exists. firstly, it calls df internally.
+# i can to that too. secondly, it doesn't seem stable yet. also it's broken.
+    my ( $dfh ) = @_;
+    my $output = `df -h --output=used,avail,pcent "$dfh" | tail -1`;
+    my ( $used, $avail, $pcent ) = split(' ', $output);
+    return $used, $avail, $pcent;
 }
 
 sub format_filesize {
     my $size = shift;
     my $exp = 0;
-    state $units = [qw( B KB MB GB )];
+    state $units = [qw( B K M G )];
     for ( @$units ) {
         last if $size < 1024;
         $size /= 1024;
@@ -87,11 +104,11 @@ sub check_data_dir {
 # return values: 0 = not empty, 1 = empty, -1 = not existent
   my ( $dir ) = @_;
   my $file;
-  opendir my $dfh, $dir or die "Could not open dir: $!\n";
+  opendir( my $dfh, $dir ) or die "Could not open $dir: $!\n";
   if ( $dfh ){
       while ( defined( $file = readdir $dfh ) ){
           next if $file eq '.' or $file eq '..';
-          closedir $dfh;
+          closedir( $dfh );
           return 1;
       }
      closedir $dfh;
@@ -105,10 +122,12 @@ sub check_data_dir {
 # code
 #
 print $m_cgi->header;
-process_error_messages(s_errormsg);
+
+$m_errstring = process_error_messages(s_errormsg);
+$m_template->param("t_errors" => "$m_errstring");
 
 if ( check_data_dir(s_datadir) ){
-    opendir my $m_dfh, s_datadir or die "Could not open dir: $!\n";
+    opendir my $m_dfh, s_datadir or die "Could not open s_datadir: $!\n";
     my @m_filelist = readdir $m_dfh;
     sort @m_filelist;
     my @m_loop;
@@ -136,9 +155,18 @@ if ( check_data_dir(s_datadir) ){
     }
     $m_template->param(t_dirlisting => \@m_loop);
 } elsif ( check_data_dir(s_datadir) eq -1 ){
-    die "Could not open data directory: $!\n";
+    die "Could not open s_datadir: $!\n";
 } else {
     $m_template->param( 't_empty' => 'true' );
+}
+
+if ( s_showdiskfree ){
+    my ( $m_used, $m_avail, $m_pcent ) = process_df_output(s_datadir);
+    $m_template->param(
+        t_percent => "$m_pcent",
+        t_used    => "$m_used",
+        t_avail   => "$m_avail",
+    );
 }
 
 $m_template->param(
