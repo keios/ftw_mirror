@@ -121,8 +121,6 @@ sub check_data_dir {
 #
 # code
 #
-print $m_cgi->header;
-
 $m_errstring = process_error_messages(s_errormsg);
 $m_template->param("t_errors" => "$m_errstring");
 
@@ -176,4 +174,5 @@ $m_template->param(
     t_subheader => s_subheader,
 );
 
+print $m_cgi->header;
 print $m_template->output;

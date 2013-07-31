@@ -45,7 +45,7 @@ set -u
 # build a suitable regexp
 EXCLUDE_TYPES="^${EXCLUDE_TYPES// /\$|^}\$"
 # set up error logging
-[ -f "$ERROR_MSG" ] || touch "$ERROR_MSG" && chown "$MIRRORED_USER":"$MIRRORED_GROUP" "ERROR_MSG"
+[ -f "$ERROR_MSG" ] || touch "$ERROR_MSG" && chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$ERROR_MSG"
 
 # main loop
 inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e moved_to -e moved_from "$WATCH_DIR" | while read LINE; do

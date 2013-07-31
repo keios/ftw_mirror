@@ -67,12 +67,14 @@
 
     <!--TMPL_IF name="t_percent"-->
     <hr />
-    <div id="progressbar">
-        <span style="width:<!--TMPL_VAR "t_percent"-->">&nbsp;</span>
+    <div class="center">
+    <div id="progress">
+        <span style="width:<!--TMPL_VAR "t_percent"-->"></span>
     </div>
     <div>
         used: <!--TMPL_VAR name="t_used"--> |
         free: <!--TMPL_VAR name="t_avail"-->
+    </div>
     </div>
     <!--/TMPL_IF-->
 

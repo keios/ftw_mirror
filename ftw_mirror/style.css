@@ -56,6 +56,10 @@ font-weight:bold;
 font-size:1.1em;
 }
 
+.center{
+text-align:center;
+}
+
 table {
 width:100%;
 border-collapse:collapse;
@@ -83,18 +87,27 @@ text-align:right;
 }
 
 #progress {
-background-color: #CCC;
+margin-left:auto;
+margin-right:auto;
+background:#777;
 height:1.2em;
-width:100%;
-padding:3px;
+width:60%;
+padding:1px;
+position:relative;
+border-radius: 1.2em;
+-webkit-box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
+-moz-box-shadow   : inset 0 -1px 1px rgba(255,255,255,0.3);
+box-shadow        : inset 0 -1px 1px rgba(255,255,255,0.3);
 }
 
 #progress span {
 display:block;
 height:100%;
-color:#DD0;
-/*overflow:hidden;
-*/}
+background-color:#DD0;
+border-radius:1.2em;
+overflow:hidden;
+position:relative;
+}
 
 #mainColumn {
 margin: 0 auto;
