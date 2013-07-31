@@ -69,7 +69,7 @@ sub process_error_messages {
     if ( $fs ) {
         $errormsg = do {
             local $/ = undef;
-            open( $fh, "+<", '<:encoding(UTF-8)', $file) or die "Could not open file: $!\n";
+            open( $fh, '+<:encoding(UTF-8)', $file) or die "Could not open file: $!\n";
             <$fh>;
         };
     truncate( $fh, "0" ) or die "Could not empty $fh: $!\n";
