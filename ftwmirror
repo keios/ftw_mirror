@@ -19,11 +19,11 @@
 #
 
 # set to your liking
-WATCH_DIR=/home/keios/test/FTWMirror
-TARGET_DIR=/home/keios/test/ftw_mirror/data
+WATCH_DIR=/home/ftp/FTWMirror
+TARGET_DIR=/var/www/ftw_mirror/data
 
 # this will be read (and cleared) by the frontend
-ERROR_MSG=/home/keios/test/ftw_mirror/error.msg
+ERROR_MSG=/var/www/ftw_mirror/error.msg
 
 # this is cheap and only somewhat effective. webservers generally interpret files by mimetype, not by extension,
 # so you really shouldn't frolic that you're safe from malicious attackers. 'malicious_php_code.jpg' can still ruin your day
@@ -32,8 +32,8 @@ EXCLUDE_TYPES="xhtml xml html htm php php4 php5 ph3 ph4 ph5 phtml phtm pl cgi"
 # for setting permissions on the file afterwards - not a umask
 MIRRORED_FILEPERM="0440"
 # should be set to the user and group your webserver uses
-MIRRORED_USER="keios"
-MIRRORED_GROUP="users"
+MIRRORED_USER="www-data"
+MIRRORED_GROUP="www-data"
 
 # use symlinks instead of copying. will only work if $WATCH_DIR and $TARGET_DIR are on the same partition. could fail because of access rights
 USE_SYMLINKS=true

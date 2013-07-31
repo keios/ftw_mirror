@@ -24,9 +24,9 @@ use strict;
 use warnings;
 
 use CGI;
-use URI::Encode;
 use HTML::Template;
-use Encode qw(encode decode);
+use URI::Encode;
+use Encode qw( encode decode );
 use utf8;
 
 # set to your liking
@@ -38,25 +38,25 @@ use constant s_subheader     => 'FTP-to-WWW mirror scripts';
 use constant s_title         => 'FTW Mirror';
 
 # path options
-use constant s_datadir       => '/home/keios/test/ftw_mirror/data';
-use constant s_errormsg      => '/home/keios/test/ftw_mirror/error.msg';
+use constant s_datadir       => '/var/www/ftw_mirror/data';
+use constant s_errormsg      => '/var/www/ftw_mirror/error.msg';
 
 # show used disk space progress bar
 use constant s_showdiskfree  => 1;
 
 # leave these alone
 my $m_errstring = '';
-my $m_baselink = '';
-my $m_fsize = '';
-my $m_filesize = '';
+my $m_baselink  = '';
+my $m_fsize     = '';
+my $m_filesize  = '';
 my $m_permalink = '';
-my $m_enc = 'utf-8';
+my $m_enc       = 'utf-8';
 
-my $m_cgi = CGI->new;
-my $m_uri = URI::Encode->new( encode_reserved => 0 );
-my $m_template = HTML::Template->new( filename => "index.template",
-                                      loop_context_vars => 1,
-                                      associate => + $m_cgi );
+my $m_cgi       = CGI->new;
+my $m_uri       = URI::Encode->new( encode_reserved => 0 );
+my $m_template  = HTML::Template->new( filename => "index.template",
+                                       loop_context_vars => 1,
+                                       associate => + $m_cgi );
 
 #
 # functions
