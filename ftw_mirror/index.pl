@@ -128,7 +128,7 @@ if ( check_data_dir(s_datadir) ){
     sort @m_filelist;
     my @m_loop;
 
-    $m_baselink = s_datadir;
+    $m_baselink = '/srv/www/test/ftw_mirror/data'; #s_datadir;
     $m_baselink =~ s/$ENV{DOCUMENT_ROOT}/$ENV{HTTP_HOST}\//;
 
     foreach my $m_file (@m_filelist) {
@@ -137,8 +137,8 @@ if ( check_data_dir(s_datadir) ){
         $m_fsize = ( -s s_datadir ."/". $m_file);
         $m_filesize = format_filesize($m_fsize);
 
-        $m_permalink = $m_uri->encode($m_baselink);
-        $m_permalink = "http://" . $m_permalink;
+        $m_permalink = "http://" . $m_baselink . "/" . $m_file;
+        $m_permalink = $m_uri->encode($m_permalink);
 
         my %m_line = (
             t_itemname => $m_file,
