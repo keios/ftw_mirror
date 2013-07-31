@@ -109,7 +109,7 @@ sub check_data_dir {
   if ( $dfh ){
       while ( defined( $file = readdir $dfh ) ){
           next if $file eq '.' or $file eq '..'
-                or $m_file eq '.htaccess' or $m_file eq '.htpasswd';
+                or $file eq '.htaccess' or $file eq '.htpasswd';
           closedir( $dfh );
           return 1;
       }
