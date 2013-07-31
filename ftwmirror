@@ -89,7 +89,7 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
                 else
                     DISKFREE=$( df --output=avail "$TARGET_DIR" | tail -1 )
                     FILESIZE=$( stat -c%s "$WATCH_DIR/$FILE_HANDLE")
-                    echo $DISKFREE"==="$FILESIZE
+
                     if [[ $DISKFREE -gt $FILESIZE ]]; then
                         cp -f "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
                         chmod $MIRRORED_FILEPERM "$TARGET_DIR/$FILE_HANDLE"
