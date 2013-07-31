@@ -25,3 +25,4 @@ deployment
 known limitations (won't be fixed)
 ----------
 - single-user system: the error log is read by the frontend once, then zeroed.
+- not all GNU *df* utils have the --output switch, so the used hdd space progress bar won't work everywhere.
