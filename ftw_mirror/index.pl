@@ -59,7 +59,6 @@ my $m_template = HTML::Template->new( filename => "index.template",
 #
 # functions
 #
-
 sub process_error_messages {
     my ( $file ) = @_;
     my $fh;
@@ -80,7 +79,7 @@ sub process_error_messages {
 
 sub process_df_output {
 # yes, i do know Filesys::DiskSpace exists. firstly, it calls df internally.
-# i can to that too. secondly, it doesn't seem stable yet. also it's broken.
+# i can do that too. secondly, it doesn't seem stable yet. also it's broken.
     my ( $dfh ) = @_;
     my $output = `df -h --output=used,avail,pcent "$dfh" | tail -1`;
     my ( $used, $avail, $pcent ) = split(' ', $output);
@@ -129,7 +128,7 @@ if ( check_data_dir(s_datadir) ){
     sort @m_filelist;
     my @m_loop;
 
-    $m_baselink = '/srv/www/te st/ftw_mirror/data';
+    $m_baselink = s_datadir;
     $m_baselink =~ s/$ENV{DOCUMENT_ROOT}/$ENV{HTTP_HOST}\//;
 
     foreach my $m_file (@m_filelist) {

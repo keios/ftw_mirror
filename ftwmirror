@@ -35,6 +35,9 @@ MIRRORED_FILEPERM="0440"
 MIRRORED_USER="keios"
 MIRRORED_GROUP="users"
 
+# use symlinks instead of copying. will only work if $WATCH_DIR and $TARGET_DIR are on the same partition. could fail because of access rights
+USE_SYMLINKS=true
+
 # leave these alone
 ACTION=""
 DATE=""
@@ -51,7 +54,8 @@ EXCLUDE_TYPES="^${EXCLUDE_TYPES// /\$|^}\$"
 inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e moved_to -e moved_from "$WATCH_DIR" | while read LINE; do
     # awk is slow, but i don't care. send me a pull request if you've a better option
     ACTION=$( echo "$LINE" | awk '{print $1;}' )
-    FILE_HANDLE=$( echo "$LINE" | awk '{print $2;}' )
+    # print lines 2 to n (for filenames with spaces) and rebuild for output on the same line
+    FILE_HANDLE=$( echo "$LINE" | awk '{for (i=1; i<=NF-1; i++) $i = $(i+1); NF-=1; print}' )
 
     case $ACTION in
         CREATE,ISDIR)
@@ -70,12 +74,28 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
                 # write an error message if somebody tries to upload an undesirable filetype
                 DATE=$(date +%F/%T)
                 echo -e "$DATE: \"$FILE_HANDLE\" is a \"$FILETYPE\" file. this service does not accept such.\r" >> "$ERROR_MSG"
-                # kill it with fire or the nearest equivalent.
+                # kill it with fire or the nearest equivalent
                 rm -f "$WATCH_DIR/$FILE_HANDLE"
             else
-                cp -f "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
-                chmod $MIRRORED_FILEPERM "$TARGET_DIR/$FILE_HANDLE"
-                chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$TARGET_DIR/$FILE_HANDLE"
+                if ($USE_SYMLINKS); then
+                    # ln breaks if the link target includes whitespace
+                    LINKSOURCE="$WATCH_DIR/$FILE_HANDLE"
+                    LINKTARGET="$TARGET_DIR/$FILE_HANDLE"
+                    # thus, escape all the spaces!
+                    LINKSOURCE=$( echo -e "$LINKSOURCE" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"## )
+                    LINKTARGET=$( echo -e "$LINKTARGET" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"## )
+
+                    eval ln -sf "$LINKSOURCE" "$LINKTARGET"
+                else
+                    DISKFREE=$( df --output=avail "$TARGET_DIR" | tail -1 )
+                    FILESIZE=$( stat -c%s "$WATCH_DIR/$FILE_HANDLE")
+                    echo $DISKFREE"==="$FILESIZE
+                    if [[ $DISKFREE -gt $FILESIZE ]]; then
+                        cp -f "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
+                        chmod $MIRRORED_FILEPERM "$TARGET_DIR/$FILE_HANDLE"
+                        chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$TARGET_DIR/$FILE_HANDLE"
+                    fi
+                fi
             fi
         ;;
         *)
