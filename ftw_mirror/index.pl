@@ -108,7 +108,8 @@ sub check_data_dir {
   binmode $dfh, ':encoding(UTF-8)';
   if ( $dfh ){
       while ( defined( $file = readdir $dfh ) ){
-          next if $file eq '.' or $file eq '..';
+          next if $file eq '.' or $file eq '..'
+                or $m_file eq '.htaccess' or $m_file eq '.htpasswd';
           closedir( $dfh );
           return 1;
       }
@@ -136,7 +137,8 @@ if ( check_data_dir( s_datadir ) ){
     $m_baselink =~ s/$ENV{DOCUMENT_ROOT}/$ENV{HTTP_HOST}\//;
 
     foreach my $m_file ( @m_filelist ) {
-        next if $m_file eq '.' or $m_file eq '..';
+        next if $m_file eq '.' or $m_file eq '..'
+                or $m_file eq '.htaccess' or $m_file eq '.htpasswd';
 
         $m_file = decode( $m_enc, $m_file );
 
