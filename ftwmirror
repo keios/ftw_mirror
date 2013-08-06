@@ -52,10 +52,9 @@ EXCLUDE_TYPES="^${EXCLUDE_TYPES// /\$|^}\$"
 
 # main loop
 inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e moved_to -e moved_from "$WATCH_DIR" | while read LINE; do
-    # awk is slow, but i don't care. send me a pull request if you've a better option
-    ACTION=$( echo "$LINE" | awk '{print $1;}' )
-    # print lines 2 to n (for filenames with spaces) and rebuild for output on the same line
-    FILE_HANDLE=$( echo "$LINE" | awk '{for (i=1; i<=NF-1; i++) $i = $(i+1); NF-=1; print}' )
+
+    ACTION=${LINE%% *}
+    FILE_HANDLE=${LINE#* }
 
     case $ACTION in
         CREATE,ISDIR)
@@ -82,13 +81,13 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
                     LINKSOURCE="$WATCH_DIR/$FILE_HANDLE"
                     LINKTARGET="$TARGET_DIR/$FILE_HANDLE"
                     # thus, escape all the spaces!
-                    LINKSOURCE=$( echo -e "$LINKSOURCE" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"## )
-                    LINKTARGET=$( echo -e "$LINKTARGET" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"## )
+                    LINKSOURCE=$(echo -e "$LINKSOURCE" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"##)
+                    LINKTARGET=$(echo -e "$LINKTARGET" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"##)
 
                     eval ln -sf "$LINKSOURCE" "$LINKTARGET"
                 else
-                    DISKFREE=$( df --output=avail "$TARGET_DIR" | tail -1 )
-                    FILESIZE=$( stat -c%s "$WATCH_DIR/$FILE_HANDLE")
+                    DISKFREE=$(df --output=avail "$TARGET_DIR" | tail -1)
+                    FILESIZE=$(stat -c%s "$WATCH_DIR/$FILE_HANDLE")
 
                     if [[ $DISKFREE -gt $FILESIZE ]]; then
                         cp -f "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
