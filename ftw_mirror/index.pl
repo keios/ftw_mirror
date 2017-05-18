@@ -80,11 +80,11 @@ sub process_error_messages {
 }
 
 sub process_df_output {
-# yes, i do know Filesys::DiskSpace exists. firstly, it calls df internally.
-# i can do that too. secondly, it doesn't seem stable yet. also it's broken.
+# yes, i do know Filesys::DiskSpace exists. first, it calls df internally.
+# i can do that too. second, it doesn't seem stable yet. also it's broken.
     my ($dfh) = @_;
-    my $output = `df -h --output=used,avail,pcent "$dfh" | tail -1`;
-    my ($used, $avail, $pcent) = split(' ', $output);
+    my $output = `df -h "$dfh" | tail -1`;
+    my ($disk, $size, $used, $avail, $pcent, $mount) = split(' ', $output);
     return $used, $avail, $pcent;
 }
 
@@ -134,7 +134,7 @@ if (check_data_dir(s_datadir)){
     my @m_loop;
 
     $m_baselink = s_datadir;
-    $m_baselink =~ s/$ENV{DOCUMENT_ROOT}/$ENV{HTTP_HOST}\//;
+    $m_baselink =~ s/$ENV{DOCUMENT_ROOT}/$ENV{HTTP_HOST}/;
 
     foreach my $m_file (@m_filelist) {
         next if $m_file eq '.' or $m_file eq '..'
@@ -169,6 +169,20 @@ if (s_showdiskfree){
     $m_template->param(
         t_percent => "$m_pcent",
         t_used    => "$m_used",
+        t_avail   => "$m_avail",
+    );
+}
+
+$m_template->param(
+    t_style     => s_stylesheet,
+    t_title     => s_title,
+    t_header    => s_header,
+    t_subheader => s_subheader,
+);
+
+print $m_cgi->header;
+print $m_template->output;
+sed    => "$m_used",
         t_avail   => "$m_avail",
     );
 }

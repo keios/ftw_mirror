@@ -18,9 +18,15 @@
 #
 #
 
+# daemon mode
+#(
 # set to your liking
-WATCH_DIR=/home/ftp/FTWMirror
+#WATCH_DIR=/home/ftp/FTWMirror
+#TARGET_DIR=/var/www/ftw_mirror/data
+
+WATCH_DIR=/home/keios/test
 TARGET_DIR=/var/www/ftw_mirror/data
+
 
 # this will be read (and cleared) by the frontend
 ERROR_MSG=/var/www/ftw_mirror/error.msg
@@ -50,6 +56,10 @@ EXCLUDE_TYPES="^${EXCLUDE_TYPES// /\$|^}\$"
 # set up error logging
 [ -f "$ERROR_MSG" ] || touch "$ERROR_MSG" && chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$ERROR_MSG"
 
+# escape directories in case of weird characters
+WATCH_DIR=$(printf '%q' "$WATCH_DIR")
+TARGET_DIR=$(printf '%q' "$TARGET_DIR")
+
 # main loop
 inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e moved_to -e moved_from "$WATCH_DIR" | while read LINE; do
 
@@ -62,13 +72,15 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
             DATE=$(date +%F/%T)
             echo -e "$DATE: \"$FILE_HANDLE\" is a directory. this service is for files only.\r" >> "$ERROR_MSG"
             # for good measure
-            rm -rf "$WATCH_DIR/$FILE_HANDLE"
+            rm -rf $WATCH_DIR/$FILE_HANDLE
+            
         ;;
         DELETE|MOVED_FROM)
-            rm -f "$TARGET_DIR/$FILE_HANDLE"
+			DELETE_DIR=$(find $TARGET_DIR -name "$FILE_HANDLE" -printf %h)
+            rm -rf $DELETE_DIR
         ;;
         CLOSE_WRITE*|MOVED_TO)
-            FILETYPE=$(echo "${FILE_HANDLE##*.}" | tr [:upper:] [:lower:])
+            FILETYPE=$(echo ${FILE_HANDLE##*.} | tr [:upper:] [:lower:])
             if [[ $FILETYPE =~ $EXCLUDE_TYPES ]]; then
                 # write an error message if somebody tries to upload an undesirable filetype
                 DATE=$(date +%F/%T)
@@ -76,23 +88,23 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
                 # kill it with fire or the nearest equivalent
                 rm -f "$WATCH_DIR/$FILE_HANDLE"
             else
-                if ($USE_SYMLINKS); then
-                    # ln breaks if the link target includes whitespace
-                    LINKSOURCE="$WATCH_DIR/$FILE_HANDLE"
-                    LINKTARGET="$TARGET_DIR/$FILE_HANDLE"
-                    # thus, escape all the spaces!
-                    LINKSOURCE=$(echo -e "$LINKSOURCE" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"##)
-                    LINKTARGET=$(echo -e "$LINKTARGET" | awk 'BEGIN {FS = "\n" } { printf "\"%s\" ", $1 }' | sed -e s#\"\"##)
+				# make up some directory based on file checksum
+				CKSUM=$(cksum "$WATCH_DIR/$FILE_HANDLE" | tr -s " " "\012" | head -1)
+				mkdir "$TARGET_DIR/$CKSUM" && touch "$TARGET_DIR/$CKSUM/index.html"
+				
+				# escape file handle
+				FILE_HANDLE=$(printf '%q' "$FILE_HANDLE")
 
-                    eval ln -sf "$LINKSOURCE" "$LINKTARGET"
+                if ($USE_SYMLINKS); then
+                    eval ln -sf "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$CKSUM/$FILE_HANDLE"
                 else
-                    DISKFREE=$(df --output=avail "$TARGET_DIR" | tail -1)
-                    FILESIZE=$(stat -c%s "$WATCH_DIR/$FILE_HANDLE")
+                    DISKFREE=$(df $TARGET_DIR | tail -1 | tr -s " " "\012" | tail -n 3 | head -1)
+                    FILESIZE=$(stat -c%s $WATCH_DIR/$FILE_HANDLE)
 
                     if [[ $DISKFREE -gt $FILESIZE ]]; then
-                        cp -f "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$FILE_HANDLE"
-                        chmod $MIRRORED_FILEPERM "$TARGET_DIR/$FILE_HANDLE"
-                        chown "$MIRRORED_USER":"$MIRRORED_GROUP" "$TARGET_DIR/$FILE_HANDLE"
+                        cp -f "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$CKSUM/$FILE_HANDLE"
+                        chmod "$MIRRORED_FILEPERM" "$TARGET_DIR/$CKSUM/$FILE_HANDLE"
+                        chown "$MIRRORED_USER:$MIRRORED_GROUP" "$TARGET_DIR/$CKSUM/$FILE_HANDLE"
                     fi
                 fi
             fi
@@ -107,5 +119,19 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
     LINE=""
 
 done
+# daemon mode
+#) </dev/null >/dev/null 2>&1 &
+#disown
+
+exit 0
+ # just because
+    ACTION=""
+    FILE_HANDLE=""
+    LINE=""
+
+done
+# daemon mode
+#) </dev/null >/dev/null 2>&1 &
+#disown
 
 exit 0
