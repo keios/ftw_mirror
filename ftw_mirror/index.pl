@@ -26,6 +26,8 @@ use warnings;
 use CGI;
 use HTML::Template;
 use URI::Encode;
+use File::Find;
+use Path::Iterator::Rule;
 use Encode qw(encode decode);
 use utf8;
 
@@ -38,8 +40,8 @@ use constant s_subheader     => 'FTP-to-WWW mirror scripts';
 use constant s_title         => 'FTW Mirror';
 
 # path options
-use constant s_datadir       => '/var/www/ftw_mirror/data';
-use constant s_errormsg      => '/var/www/ftw_mirror/error.msg';
+use constant s_datadir       => '/var/www/data';
+use constant s_errormsg      => '/var/www/data/error.msg';
 
 # show used disk space progress bar
 use constant s_showdiskfree  => 1;
@@ -80,11 +82,11 @@ sub process_error_messages {
 }
 
 sub process_df_output {
-# yes, i do know Filesys::DiskSpace exists. first, it calls df internally.
-# i can do that too. second, it doesn't seem stable yet. also it's broken.
+# yes, i do know Filesys::DiskSpace exists. firstly, it calls df internally.
+# i can do that too. secondly, it doesn't seem stable yet. also it's broken.
     my ($dfh) = @_;
-    my $output = `df -h "$dfh" | tail -1`;
-    my ($disk, $size, $used, $avail, $pcent, $mount) = split(' ', $output);
+    my $output = `df -h --output=used,avail,pcent "$dfh" | tail -1`;
+    my ($used, $avail, $pcent) = split(' ', $output);
     return $used, $avail, $pcent;
 }
 
@@ -136,24 +138,29 @@ if (check_data_dir(s_datadir)){
     $m_baselink = s_datadir;
     $m_baselink =~ s/$ENV{DOCUMENT_ROOT}/$ENV{HTTP_HOST}/;
 
-    foreach my $m_file (@m_filelist) {
+    my @m_findfiles = `find -L /var/www/data -type f -not -name "index.html" -not -name "error.msg" -not -name ".htaccess" -not -name ".htpasswd"`;
+    chomp @m_findfiles;
+    
+    foreach my $m_file (@m_findfiles) {
         next if $m_file eq '.' or $m_file eq '..'
                 or $m_file eq '.htaccess' or $m_file eq '.htpasswd';
 
         $m_file = decode($m_enc, $m_file);
 
-        $m_fsize = (-s s_datadir ."/". $m_file);
+        $m_fsize = (-s $m_file);
         $m_filesize = format_filesize($m_fsize);
 
-        $m_permalink = "http://" . $m_baselink . "/" . $m_file;
+	my $m_flink = $m_file;
+	$m_flink =~ s/\/var\/www\/data\///;
+        $m_permalink = "http://" . $m_baselink . "/" . $m_flink;
         $m_permalink = $m_uri->encode($m_permalink);
 
         my %m_line = (
-            t_itemname => $m_file,
+            t_itemname => $m_flink,
             t_itemsize => $m_filesize,
             t_itemlink => $m_cgi->a({ -href => "$m_permalink",
                                       -title => "$m_file", },
-                                      "http://"."$m_baselink"."/"."$m_file"),
+                                      "http://"."$m_baselink"."/"."$m_flink"),
         );
         push(@m_loop, \%m_line);
     }
@@ -169,20 +176,6 @@ if (s_showdiskfree){
     $m_template->param(
         t_percent => "$m_pcent",
         t_used    => "$m_used",
-        t_avail   => "$m_avail",
-    );
-}
-
-$m_template->param(
-    t_style     => s_stylesheet,
-    t_title     => s_title,
-    t_header    => s_header,
-    t_subheader => s_subheader,
-);
-
-print $m_cgi->header;
-print $m_template->output;
-sed    => "$m_used",
         t_avail   => "$m_avail",
     );
 }

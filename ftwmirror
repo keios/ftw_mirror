@@ -24,12 +24,12 @@
 #WATCH_DIR=/home/ftp/FTWMirror
 #TARGET_DIR=/var/www/ftw_mirror/data
 
-WATCH_DIR=/home/keios/test
-TARGET_DIR=/var/www/ftw_mirror/data
+WATCH_DIR=/home/gaussftp/FTW_Mirror
+TARGET_DIR=/var/www/data
 
 
 # this will be read (and cleared) by the frontend
-ERROR_MSG=/var/www/ftw_mirror/error.msg
+ERROR_MSG=/var/www/data/error.msg
 
 # this is cheap and only somewhat effective. webservers generally interpret files by mimetype, not by extension,
 # so you really shouldn't frolic that you're safe from malicious attackers. 'malicious_php_code.jpg' can still ruin your day
@@ -97,6 +97,8 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
 
                 if ($USE_SYMLINKS); then
                     eval ln -sf "$WATCH_DIR/$FILE_HANDLE" "$TARGET_DIR/$CKSUM/$FILE_HANDLE"
+                    chmod -R 755 "$TARGET_DIR/$CKSUM"
+                    chown -R "$MIRRORED_USER:$MIRRORED_GROUP" "$TARGET_DIR/$CKSUM"
                 else
                     DISKFREE=$(df $TARGET_DIR | tail -1 | tr -s " " "\012" | tail -n 3 | head -1)
                     FILESIZE=$(stat -c%s $WATCH_DIR/$FILE_HANDLE)
@@ -114,17 +116,6 @@ inotifywait -q -m -r --format '%e %f' -e create -e delete -e close_write -e move
     esac
 
     # just because
-    ACTION=""
-    FILE_HANDLE=""
-    LINE=""
-
-done
-# daemon mode
-#) </dev/null >/dev/null 2>&1 &
-#disown
-
-exit 0
- # just because
     ACTION=""
     FILE_HANDLE=""
     LINE=""
